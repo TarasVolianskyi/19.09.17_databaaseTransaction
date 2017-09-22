@@ -1,6 +1,5 @@
 package sample;
 
-import javax.jws.soap.SOAPBinding;
 import java.sql.*;
 
 public class DataBaseHelper {
@@ -18,6 +17,13 @@ public class DataBaseHelper {
         Class.forName(DATABASE_DRIVER);
         Connection myConnection = (Connection) DriverManager.getConnection(DATABASE_PATH);
         return (PreparedStatement) myConnection.prepareStatement(qwery);
+    }
+
+    public PreparedStatement closePreparedConnection(String qwery) throws ClassNotFoundException, SQLException {
+        Class.forName(DATABASE_DRIVER);
+        Connection myConnection = (Connection) DriverManager.getConnection(DATABASE_PATH);
+        return (PreparedStatement) myConnection.prepareStatement(qwery);
+        // (PreparedStatement) myConnection.close();
     }
 
 
@@ -42,22 +48,22 @@ public class DataBaseHelper {
     }
 
     public void delete(int id) {
-        String qwery = String.format("delete from %s where id = %d limit 3", TABLE_NAME, id);
+        String qwery = String.format("delete from %s where id = %d ", TABLE_NAME, id);
         makeTransaction(qwery);
     }
 
     public void deleteAll() {
-        String qwery = String.format("delete * from %s", TABLE_NAME);
+        String qwery = String.format("delete from %s ", TABLE_NAME);
         makeTransaction(qwery);
     }
 
-    public void delete(int fromID, int toID) {
-        //String qwery = String.format("delete from %s where id = %d", TABLE_NAME, id);
-       // makeTransaction(qwery);
+    public void deleteWithLimit(int fromID, int toID) {
+        String qwery = String.format("delete from %s where id>%d and id<%d", TABLE_NAME, fromID, toID);
+        makeTransaction(qwery);
     }
 
     public void update(String name, String pass, int id) {
-        String qwery = "update ? set name=? pass=? where id=?";
+        String qwery = "update ? set name=?, pass=? where id=?";
         //makeTransaction(qwery);
         try {
             PreparedStatement preparedStatement = openPreparedConnection(qwery);
@@ -66,10 +72,8 @@ public class DataBaseHelper {
             preparedStatement.setString(3, pass);
             preparedStatement.setInt(4, id);
             preparedStatement.executeUpdate();
-            preparedStatement.close();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-
         } catch (SQLException e) {
             e.printStackTrace();
 
@@ -78,6 +82,26 @@ public class DataBaseHelper {
 
     public void printAll() {
         String qwery = String.format("select * from  %s", TABLE_NAME);
+        try {
+            Statement statement = openConnection();
+            ResultSet resultSet = statement.executeQuery(qwery);//save all data from table
+            while (resultSet.next()) {
+                User myUser = new User();
+                myUser.setId(resultSet.getInt("id"));
+                myUser.setName(resultSet.getString("name"));
+                myUser.setPass(resultSet.getString("pass"));
+                myUser.setLoginDate(resultSet.getString("loginDate"));
+                System.out.println(myUser);
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void printSomePart(int fromID, int toId) {
+        String qwery = String.format("select * from  %s where id>%d and id<%d", TABLE_NAME,fromID,toId);
         try {
             Statement statement = openConnection();
             ResultSet resultSet = statement.executeQuery(qwery);//save all data from table

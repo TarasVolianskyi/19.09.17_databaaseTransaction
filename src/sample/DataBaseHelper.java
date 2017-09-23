@@ -71,7 +71,7 @@ public class DataBaseHelper {
             preparedStatement.setString(2, name);
             preparedStatement.setString(3, pass);
             preparedStatement.setInt(4, id);
-            preparedStatement.executeUpdate();
+            preparedStatement.execute();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -101,7 +101,7 @@ public class DataBaseHelper {
     }
 
     public void printSomePart(int fromID, int toId) {
-        String qwery = String.format("select * from  %s where id>%d and id<%d", TABLE_NAME,fromID,toId);
+        String qwery = String.format("select * from  %s where id>%d and id<%d", TABLE_NAME, fromID, toId);
         try {
             Statement statement = openConnection();
             ResultSet resultSet = statement.executeQuery(qwery);//save all data from table

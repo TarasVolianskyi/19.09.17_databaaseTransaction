@@ -13,6 +13,7 @@ public class Controller {
     public TextField txtFieldUName;
     public TextField txtFieldUPass;
     public TextField txtFieldDID;
+    public TextField txtFieldDIDTo;
 
     DataBaseHelper myDBHelper = new DataBaseHelper();//only create new object
 
@@ -30,6 +31,7 @@ public class Controller {
         String name = txtFieldUName.getText();
         String pass = txtFieldUPass.getText();
         int txtFldId = Integer.parseInt(txtFieldUID.getText());
+        System.out.println(name + " " + pass + " " + txtFldId);
         myDBHelper.update(name, pass, txtFldId);
     }
 
@@ -44,10 +46,19 @@ public class Controller {
     }
 
     public void doPrintWithLimit(ActionEvent actionEvent) {
+        int txtFldIdFrom = Integer.parseInt(txtFieldRFrom.getText()) ;
+        int txtFldIdTo = Integer.parseInt(txtFieldRTo.getText()) ;
+        myDBHelper.printSomePart(txtFldIdFrom,txtFldIdTo);
 
     }
 
     public void doDeleteAll(ActionEvent actionEvent) {
         myDBHelper.deleteAll();
+    }
+
+    public void doDeleteWithLimit(ActionEvent actionEvent) {
+        int txtFldIdFrom = Integer.parseInt(txtFieldDID.getText());
+        int txtFldIdTo = Integer.parseInt(txtFieldDIDTo.getText());
+        myDBHelper.deleteWithLimit(txtFldIdFrom, txtFldIdTo);
     }
 }
